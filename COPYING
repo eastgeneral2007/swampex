@@ -1,0 +1,33 @@
+The following files are lincensed under the terms of the
+GNU General Public License (see GPL-2):
+
+core/file_collection.cpp
+core/file_collection.h
+core/gauss.cpp
+core/gauss.h
+core/img_decoder.cpp
+core/img_decoder.h
+core/log_stream.cpp
+core/log_stream.h
+core/map_container.cpp
+core/map_container.h
+core/map_datums.cpp
+core/map_datums.h
+core/map_filters.cpp
+core/map_filters.h
+core/map_index.cpp
+core/map_index.h
+core/map_loader.cpp
+core/map_loader.h
+core/map_projection.cpp
+core/map_projection.h
+core/map_render.cpp
+core/map_render.h
+core/map_types.h
+core/ozf_decoder.cpp
+core/ozf_decoder.h
+core/qsort.cpp
+core/qsort.h
+
+demos/datums.xml
+demos/mapview.cpp
