@@ -627,7 +627,7 @@ void maploader_setup_datum(map_info* mi)
 	mi->projection_params.ellipsoid_code = 
 		(char*)malloc(strlen(params->name) + 1);
 				
-	strcpy(mi->projection_params.ellipsoid_code, params->name);
+	strcpy(mi->projection_params.ellipsoid_code, params->ellipsoid);
 }
 
 /* some maps in Transverse Mercator have calibration points in n/e rather lat/lon */
@@ -691,6 +691,9 @@ void maploader_parse_imagefile(map_info* mi, char* s)
 		
 		p--;
 	}
+
+	double lat = 0; 
+	double lon = 0;
 	
 	mi->image_file = (char*)malloc(strlen(p) + 1);
 	strcpy(mi->image_file, p);
@@ -730,17 +733,17 @@ void maploader_fixcoords(map_info* mi)
 	int i = 0;
 
 	map_datum* params =	mapdatums_find(mi->datum);
-						
+												
 	// converting map datum to WGS84		
 	for ( i = 0; i < mi->calibrations_amount; i++ )
 	{
 		double height;
 
-		mapdatum_to_wgs84(	mi->calibrations[i].lon,
-							mi->calibrations[i].lat,
+		mapdatum_to_wgs84(	mi->calibrations[i].lat,
+							mi->calibrations[i].lon,
 							0,
-							&mi->calibrations[i].lon,
 							&mi->calibrations[i].lat,
+							&mi->calibrations[i].lon,
 							&height, params);
 	
 	}
@@ -750,13 +753,29 @@ void maploader_fixcoords(map_info* mi)
 	{
 		double height;
 
-		mapdatum_to_wgs84(	mi->corners[i].lon,
-							mi->corners[i].lat,
+		mapdatum_to_wgs84(	mi->corners[i].lat,
+							mi->corners[i].lon,
 							0,
-							&mi->corners[i].lon,
 							&mi->corners[i].lat,
+							&mi->corners[i].lon,
 							&height, params);
+							
 	}
+
+	params =	mapdatums_find("WGS 84");
+
+	if (mi->projection_params.ellipsoid_code)
+		free(mi->projection_params.ellipsoid_code);
+
+	mi->projection_params.a = params->a;
+	mi->projection_params.f = 1.0 / params->invf;
+		
+	mi->projection_params.ellipsoid_code = 
+		(char*)malloc(strlen(params->name) + 1);
+				
+	strcpy(mi->projection_params.ellipsoid_code, params->ellipsoid);
+
+	strcpy(mi->datum, "WGS 84");
 }
 
 
@@ -806,7 +825,7 @@ map_info* maploader_openmap(char* filename)
 
 				mi->datum = (char*)malloc(strlen(pszString) + 1);
 				strcpy(mi->datum, pszString);
-				
+								
 				maploader_setup_datum(mi);
 
 				while ( 1 )
